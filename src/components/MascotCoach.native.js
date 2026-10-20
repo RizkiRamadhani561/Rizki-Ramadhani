@@ -40,7 +40,7 @@ export default function MascotCoach({ completedCount, quizScore, onTapLessons, o
     <View style={styles.card}>
       <Pressable accessibilityRole="button" accessibilityLabel="Minta tips belajar dari Mika" onPress={showNextTip} style={styles.portraitPressable}>
         <Animated.View style={[styles.portraitFrame, { transform: [{ translateY }, { scale: pulse }] }]}>
-          <Image source={{ uri: 'https://assets.devmotion.app/lu3V2D3blZwpFneoCl4WU1qyWm6ArLY0/media/image/jujnzRk6O-WscJ1zm903Z.png' }} accessibilityLabel="Mika, karakter anime perempuan berambut panjang dengan jaket hijau" resizeMode="cover" style={styles.portrait} />
+          <Image source={{ uri: 'https://gcdn.picsart.com/pipeline-output/ecfeab13-e1a4-4a84-aec2-e81c25ffcdfe.png' }} accessibilityLabel="Mika, karakter anime perempuan berambut panjang dengan jaket hijau" resizeMode="cover" style={styles.portrait} />
         </Animated.View>
         <View style={styles.sparkle}><Ionicons name="sparkles" size={13} color={colors.forest} /></View>
       </Pressable>
