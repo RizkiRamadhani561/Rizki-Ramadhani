@@ -427,6 +427,9 @@ function LessonDetailScreen({ lesson, completed, onBack, onComplete }) {
 
 /** Kuis dengan pilihan jawaban, feedback, pembahasan, dan hasil akhir. */
 function QuizScreen({
+  questions,
+  attempt,
+  onReviewAttempt,
   questionIndex,
   selectedAnswer,
   answers,
@@ -439,7 +442,8 @@ function QuizScreen({
   onRestart,
 }) {
   if (quizFinished) {
-    const correctCount = Math.round((score / 100) * quizQuestions.length);
+    const correctCount = attempt?.correctCount ?? Math.round((score / 100) * questions.length);
+    const missedItems = attempt?.items?.filter((item) => !item.isCorrect) ?? [];
     return (
       <ScrollView contentContainerStyle={styles.screenContent} showsVerticalScrollIndicator={false}>
         <View style={styles.resultHero}>
@@ -448,7 +452,7 @@ function QuizScreen({
           </View>
           <Eyebrow tone="green">SESI SELESAI</Eyebrow>
           <Text style={styles.resultTitle}>{score >= 80 ? 'Mantap, gas terus!' : score >= 60 ? 'Progres yang bagus.' : 'Saatnya review lagi.'}</Text>
-          <Text style={styles.resultSubtitle}>Hasil latihan UTS Mobile Programming lu.</Text>
+          <Text style={styles.resultSubtitle}>Kamu menjawab {correctCount} dari {questions.length} soal dengan benar.</Text>
           <Text style={styles.resultScore}>{score}<Text style={styles.resultPercent}>%</Text></Text>
           <ProgressBar value={score} />
           <View style={styles.resultStats}>
@@ -458,7 +462,7 @@ function QuizScreen({
             </View>
             <View style={styles.resultStatDivider} />
             <View style={styles.resultStat}>
-              <Text style={styles.resultStatValue}>{quizQuestions.length - correctCount}</Text>
+              <Text style={styles.resultStatValue}>{questions.length - correctCount}</Text>
               <Text style={styles.resultStatLabel}>Perlu diulang</Text>
             </View>
           </View>
@@ -467,22 +471,34 @@ function QuizScreen({
           <Text style={styles.contentLabel}>REKOMENDASI BERIKUTNYA</Text>
           <Text style={styles.bodyCopy}>Buka kembali materi yang masih terasa sulit, lalu ulangi kuis untuk menguji pemahaman. Fokus pada alasan di balik jawaban, bukan sekadar menghafal.</Text>
         </View>
+        {missedItems.length > 0 ? (
+          <View style={styles.contentCard}>
+            <Text style={styles.contentLabel}>YANG PERLU DIREVIEW</Text>
+            <Text style={styles.bodyCopy}>{missedItems.length} soal belum tepat. Lihat jawabanmu, jawaban benar, dan materi terkait agar konsepnya makin kuat.</Text>
+            <PrimaryButton label="Review jawaban salah" icon="book-open-outline" onPress={() => onReviewAttempt(attempt)} variant="outline" />
+          </View>
+        ) : (
+          <View style={styles.takeawayCard}>
+            <AppIcon name="checkmark-circle" size={20} color={colors.success} />
+            <Text style={styles.takeawayText}>Sempurna! Semua jawaban benar. Pertahankan, ya.</Text>
+          </View>
+        )}
         <PrimaryButton label="Ulangi kuis" icon="refresh" onPress={onRestart} />
       </ScrollView>
     );
   }
 
-  const question = quizQuestions[questionIndex];
+  const question = questions[questionIndex];
   const selectedIsCorrect = selectedAnswer === question.answer;
 
   return (
     <ScrollView contentContainerStyle={styles.screenContent} showsVerticalScrollIndicator={false}>
       <PageHeader eyebrow="PRACTICE / UTS" title="Uji pemahaman" subtitle="Pilih jawaban terbaik, lalu baca pembahasannya." />
       <View style={styles.quizProgressHeader}>
-        <Text style={styles.quizQuestionCount}>SOAL {String(questionIndex + 1).padStart(2, '0')} <Text style={styles.quizQuestionOf}>/ {String(quizQuestions.length).padStart(2, '0')}</Text></Text>
+        <Text style={styles.quizQuestionCount}>SOAL {String(questionIndex + 1).padStart(2, '0')} <Text style={styles.quizQuestionOf}>/ {String(questions.length).padStart(2, '0')}</Text></Text>
         <Text style={styles.quizTopic}>{question.topic}</Text>
       </View>
-      <ProgressBar value={((questionIndex + 1) / quizQuestions.length) * 100} />
+      <ProgressBar value={((questionIndex + 1) / questions.length) * 100} />
       <View style={styles.questionCard}>
         <Text style={styles.questionText}>{question.question}</Text>
       </View>
@@ -534,9 +550,9 @@ function QuizScreen({
       {!feedbackVisible ? (
         <PrimaryButton label="Periksa jawaban" icon="arrow-forward" onPress={onCheckAnswer} disabled={selectedAnswer === null} />
       ) : (
-        <PrimaryButton label={questionIndex === quizQuestions.length - 1 ? 'Lihat hasil' : 'Soal berikutnya'} icon="arrow-forward" onPress={onNextQuestion} />
+        <PrimaryButton label={questionIndex === questions.length - 1 ? 'Lihat hasil' : 'Soal berikutnya'} icon="arrow-forward" onPress={onNextQuestion} />
       )}
-      <Text style={styles.quizFootnote}>Jawaban tersimpan selama sesi kuis ini berlangsung.</Text>
+      <Text style={styles.quizFootnote}>Soal diacak dari bank latihan. Hasil dan riwayat tersimpan di perangkat ini.</Text>
     </ScrollView>
   );
 }
@@ -588,6 +604,52 @@ function ProgressScreen({ completedIds, quizScore, onOpenLesson, onStartQuiz }) 
           onPress={() => completedIds.length === lessons.length ? onStartQuiz() : onOpenLesson(nextLesson)}
         />
       </View>
+    </ScrollView>
+  );
+}
+
+/** Review fokus pada soal salah, pembahasan, dan pintasan ke materi terkait. */
+function ReviewScreen({ reviewAttempt, onBack, onOpenLesson }) {
+  if (!reviewAttempt) return null;
+  const missedItems = reviewAttempt.items.filter((item) => !item.isCorrect);
+
+  return (
+    <ScrollView contentContainerStyle={styles.screenContent} showsVerticalScrollIndicator={false}>
+      <Pressable accessibilityRole="button" onPress={onBack} style={styles.backLink}>
+        <AppIcon name="arrow-back" size={18} color={colors.forest} />
+        <Text style={styles.backLinkText}>Kembali ke hasil/progres</Text>
+      </Pressable>
+      <PageHeader eyebrow="REVIEW / PEMBAHASAN" title="Kita pelajari lagi." subtitle={`Skor ${reviewAttempt.score}% · ${missedItems.length} soal perlu ditinjau.`} />
+      {missedItems.length === 0 ? (
+        <View style={styles.takeawayCard}>
+          <AppIcon name="checkmark-circle" size={22} color={colors.success} />
+          <Text style={styles.takeawayText}>Tidak ada jawaban salah pada sesi ini. Keren!</Text>
+        </View>
+      ) : missedItems.map((item, index) => {
+        const lesson = lessons.find((candidate) => candidate.id === item.lessonId);
+        return (
+          <View key={item.id} style={styles.reviewQuestionCard}>
+            <View style={styles.reviewMetaRow}>
+              <Eyebrow tone="green">{item.topic}</Eyebrow>
+              <Text style={styles.reviewNumber}>REVIEW {String(index + 1).padStart(2, '0')}</Text>
+            </View>
+            <Text style={styles.reviewQuestion}>{item.question}</Text>
+            <View style={[styles.reviewAnswerBox, styles.reviewAnswerWrong]}>
+              <Text style={styles.reviewAnswerLabel}>JAWABAN KAMU</Text>
+              <Text style={styles.reviewAnswerText}>{item.selectedAnswer === null ? 'Belum dijawab' : item.options[item.selectedAnswer]}</Text>
+            </View>
+            <View style={[styles.reviewAnswerBox, styles.reviewAnswerCorrect]}>
+              <Text style={styles.reviewAnswerLabel}>JAWABAN YANG BENAR</Text>
+              <Text style={styles.reviewAnswerText}>{item.options[item.answer]}</Text>
+            </View>
+            <View style={styles.reviewExplanation}>
+              <Text style={styles.contentLabel}>PEMBAHASAN</Text>
+              <Text style={styles.bodyCopy}>{item.explanation}</Text>
+            </View>
+            {lesson ? <PrimaryButton label={'Buka materi: ' + lesson.title} icon="book-outline" variant="outline" onPress={() => onOpenLesson(lesson)} /> : null}
+          </View>
+        );
+      })}
     </ScrollView>
   );
 }
