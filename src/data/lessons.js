@@ -28,7 +28,7 @@ export const lessons = [
       '    </View>',
       '  );',
       '}',
-    ].join('\\n'),
+    ].join('\n'),
     takeaway: 'Jika soal bertanya komponen untuk menampilkan gambar, jawabannya adalah Image.',
   },
   {
@@ -50,7 +50,7 @@ export const lessons = [
       '}',
       '',
       '// Pemakaian: <Greeting nama="Dina" />',
-    ].join('\\n'),
+    ].join('\n'),
     takeaway: 'Props diterima dari luar komponen; state dimiliki dan dikelola oleh komponen.',
   },
   {
@@ -79,7 +79,7 @@ export const lessons = [
       '    </View>',
       '  );',
       '}',
-    ].join('\\n'),
+    ].join('\n'),
     takeaway: 'Jangan mengubah state langsung. Gunakan fungsi setter, misalnya setCount(count + 1).',
   },
   {
@@ -101,7 +101,7 @@ export const lessons = [
       '  <Text>Materi</Text>',
       '  <Text>Profil</Text>',
       '</View>',
-    ].join('\\n'),
+    ].join('\n'),
     takeaway: "Kalau diminta menaruh item berdampingan, gunakan flexDirection: 'row'.",
   },
 ];
