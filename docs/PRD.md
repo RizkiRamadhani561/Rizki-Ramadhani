@@ -23,7 +23,7 @@ Mahasiswa D3 Manajemen Informatika yang mempelajari React Native untuk ujian teo
 ## Ruang lingkup
 **Termasuk:** dashboard, katalog dan detail materi, contoh kode, pencarian materi, kuis pilihan ganda, feedback, hasil skor, checklist progres, empat tab navigasi.
 
-**Tidak termasuk:** login, backend, sinkronisasi cloud, leaderboard, analytics, editor kode yang menjalankan program.
+**Tidak termasuk:** login, backend, sinkronisasi cloud, leaderboard, analytics, editor kode yang menjalankan program. Progres disimpan lokal menggunakan AsyncStorage; tidak disinkronkan antarperangkat.
 
 ## Arsitektur informasi
 - **Beranda:** progres, aksi lanjut belajar, pintasan kuis.
@@ -38,13 +38,17 @@ Mahasiswa D3 Manajemen Informatika yang mempelajari React Native untuk ujian teo
 - Pilihan jawaban bisa dipilih dan tombol periksa nonaktif sebelum pilihan dibuat.
 - Setelah pemeriksaan, feedback dan penjelasan tampil.
 - Setelah soal terakhir, skor ditampilkan dan kuis bisa diulang.
+- Sesi baru mengambil 10 soal unik secara acak dari bank soal yang lebih besar.
+- Progres materi, skor, dan riwayat hingga 20 sesi tetap tersedia setelah aplikasi/browser dibuka kembali.
+- Review menampilkan jawaban pengguna, jawaban benar, penjelasan, dan pintasan ke materi terkait.
+- Maskot Mika memiliki animasi mengambang dan respons visual/tips ketika ditekan.
 - Empat tab utama bisa dibuka dari navigasi bawah.
 
 ## UX dan aksesibilitas
 Gunakan satu aksi utama yang jelas, target sentuh sekitar 44–48 dp atau lebih, kontras memadai, label teks untuk ikon navigasi, dan status yang tidak hanya dibedakan dengan warna. Uji ukuran font besar serta screen reader sebelum rilis.
 
 ## Batasan
-Data bersifat lokal. Progres disimpan di state selama sesi dan belum persisten setelah aplikasi ditutup. Latihan bukan bocoran atau jaminan soal resmi UTS.
+Data bersifat lokal dan tidak disinkronkan antarperangkat. Browser dapat menghapus data lokal jika pengguna membersihkan storage. Latihan bukan bocoran atau jaminan soal resmi UTS.
 
 ## Definition of Done
 - [ ] Aplikasi berjalan di Expo.
