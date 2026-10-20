@@ -2,6 +2,20 @@
 
 Aplikasi belajar **React Native untuk persiapan UTS Mobile Programming** mahasiswa Manajemen Informatika. Fokus pada component, state, props, `useState`, dan `flexDirection`.
 
+## 🌐 Live demo — GitHub Pages
+
+Setelah workflow GitHub Actions selesai dan Pages diaktifkan, aplikasi web tersedia di:
+
+**https://rizkiramadhani561.github.io/Rizki-Ramadhani/**
+
+Setiap push ke branch `main` akan otomatis membangun ulang versi web dan menerbitkannya ke GitHub Pages.
+
+### Pengaturan GitHub Pages (cukup sekali)
+
+1. Buka **Settings → Pages** pada repository.
+2. Pada **Build and deployment → Source**, pilih **GitHub Actions**.
+3. Buka tab **Actions** dan tunggu workflow **Deploy Expo Web to GitHub Pages** selesai dengan status sukses.
+
 ## Fitur MVP
 
 - Dashboard belajar dengan progres dan CTA melanjutkan materi.
@@ -16,7 +30,8 @@ Aplikasi belajar **React Native untuk persiapan UTS Mobile Programming** mahasis
 - React Native
 - Expo SDK 54
 - JavaScript
-- @expo/vector-icons
+- `@expo/vector-icons`
+- React Native Web untuk versi browser
 
 ## Jalankan di komputer
 
@@ -25,28 +40,44 @@ Aplikasi belajar **React Native untuk persiapan UTS Mobile Programming** mahasis
 3. Pasang dependency dan jalankan Expo:
 
 ```bash
+git clone https://github.com/RizkiRamadhani561/Rizki-Ramadhani.git
+cd Rizki-Ramadhani
 npm install
 npx expo start
 ```
 
-Scan QR dengan Expo Go untuk membuka di ponsel. Untuk web preview, jalankan `npm run web` setelah dependency terpasang.
+Scan QR dengan Expo Go untuk membuka di ponsel. Untuk melihat web dalam mode development, jalankan:
 
-> Jika Expo SDK terbaru telah berubah saat kamu menyiapkan lingkungan, ikuti panduan migrasi resmi Expo dan pastikan versi React Native cocok dengan SDK di `package.json`.
+```bash
+npm run web
+```
+
+Untuk membuat hasil build web secara lokal:
+
+```bash
+npm run build:web
+```
+
+Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otomatis diunggah ke GitHub Pages.
 
 ## Struktur proyek
 
 ```text
 .
 ├── App.js                  # Root app, navigasi, layar, state kuis
-├── app.json                # Metadata Expo
+├── app.json                # Metadata Expo dan base path GitHub Pages
 ├── package.json            # Dependency dan script
+├── .github/
+│   └── workflows/
+│       └── deploy-pages.yml # Build dan deploy otomatis
 ├── src/
 │   ├── data/
 │   │   └── lessons.js      # Konten modul dan bank soal
 │   └── theme.js            # Design tokens
 └── docs/
     ├── PRD.md              # Product Requirements Document
-    └── DESIGN-SYSTEM.md    # Arah visual, token, dan aturan UI
+    ├── DESIGN-SYSTEM.md    # Arah visual, token, dan aturan UI
+    └── UX-PILOT-PROMPT.md  # Brief untuk membuat mockup UI
 ```
 
 ## Konsep React Native yang dipelajari
@@ -65,7 +96,9 @@ Scan QR dengan Expo Go untuk membuka di ponsel. Untuk web preview, jalankan `npm
 - Soal dalam aplikasi adalah **latihan berdasarkan kisi-kisi**, bukan bocoran atau jaminan soal resmi.
 - Data progres hanya disimpan dalam state selama sesi; belum ada penyimpanan permanen atau backend.
 - Contoh kode di dalam modul adalah bahan belajar dan tidak dieksekusi oleh aplikasi.
+- GitHub Pages menjalankan versi web dari aplikasi; tidak menggantikan instalasi aplikasi Android/iOS.
 - Periksa dokumentasi resmi untuk perubahan versi:
+  - [Panduan Expo untuk publikasi website](https://docs.expo.dev/guides/publishing-websites/)
   - [Expo Router](https://docs.expo.dev/router/introduction/)
   - [React Native Flexbox](https://reactnative.dev/docs/flexbox)
   - [React useState](https://react.dev/reference/react/useState)
