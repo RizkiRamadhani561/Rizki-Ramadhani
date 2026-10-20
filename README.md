@@ -24,7 +24,7 @@ Setiap push ke branch `main` akan otomatis membangun ulang versi web dan menerbi
 - Kuis 10 soal pilihan ganda yang diacak dari bank 40+ soal, dengan feedback dan pembahasan.
 - Review jawaban salah, jawaban benar, penjelasan, dan pintasan ke materi terkait.
 - Progres materi tersimpan lokal, riwayat hingga 20 sesi kuis, dan skor terakhir.
-- Maskot anime interaktif Mika dengan animasi melayang, respons sentuhan, tips, dan pintasan kuis/materi.
+- Maskot anime Mika dengan ilustrasi khusus, animasi melayang dan efek tilt 3D pada web, respons saat disentuh, tips kontekstual, serta pintasan kuis/materi.
 - Desain mobile-first dengan warna hangat, hijau hutan, aksen lime, dan komponen reusable.
 
 ## Stack
@@ -34,7 +34,8 @@ Setiap push ke branch `main` akan otomatis membangun ulang versi web dan menerbi
 - JavaScript
 - `@expo/vector-icons`
 - `@react-native-async-storage/async-storage` untuk progres dan riwayat lokal
-- `react-native-svg` untuk ilustrasi maskot vektor
+- `motion` untuk animasi perspektif 3D khusus web
+- Ilustrasi Mika di `assets/mika.jpg`, dipakai oleh komponen web dan native yang terpisah
 - React Native Web untuk versi browser
 
 ## Jalankan di komputer
@@ -68,7 +69,9 @@ Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otom
 
 ```text
 .
-├── App.js                  # Root app, navigasi, kuis, review, animasi maskot Mika
+├── App.js                  # Root app, navigasi, kuis, progres, dan review
+├── assets/
+│   └── mika.jpg            # Ilustrasi anime Mika berjaket hijau
 ├── app.json                # Metadata Expo dan base path GitHub Pages
 ├── package.json            # Dependency dan script
 ├── .github/
@@ -78,6 +81,9 @@ Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otom
 │   ├── data/
 │   │   ├── lessons.js      # Konten modul
 │   │   └── quizBank.js     # Bank soal acak beserta kunci/pembahasan
+│   ├── components/
+│   │   ├── MascotCoach.web.js    # Motion: 3D perspective, hover, dan floating
+│   │   └── MascotCoach.native.js # Native Animated untuk Android/iOS
 │   └── theme.js            # Design tokens
 └── docs/
     ├── PRD.md              # Product Requirements Document
