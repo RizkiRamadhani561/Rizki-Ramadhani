@@ -34,6 +34,10 @@ jobs:
       - name: Export Expo web bundle
         run: npm run build:web
 
+      # Bundle Android separately as a cross-platform smoke test; only the web dist is deployed.
+      - name: Validate Android JavaScript bundle
+        run: npx expo export --platform android --output-dir dist-android
+
       - name: Disable Jekyll for underscore-prefixed assets
         run: touch dist/.nojekyll
 
