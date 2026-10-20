@@ -6,12 +6,11 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  StatusBar,
   TextInput,
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, type } from './src/theme';
+import { colors, spacing, radius } from './src/theme';
 import { lessons, quizQuestions } from './src/data/lessons';
 
 /**
@@ -678,7 +677,6 @@ export default function App() {
   return (
     <SafeAreaView style={styles.appShell}>
       <ExpoStatusBar style="dark" backgroundColor={colors.paper} />
-      <StatusBar barStyle="dark-content" backgroundColor={colors.paper} />
       <View style={styles.topBar}>
         <View style={styles.brandLockup}>
           <View style={styles.brandMark}>
