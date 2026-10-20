@@ -21,8 +21,10 @@ Setiap push ke branch `main` akan otomatis membangun ulang versi web dan menerbi
 - Dashboard belajar dengan progres dan CTA melanjutkan materi.
 - Empat modul dengan ringkasan, poin penting, kode berkomentar, dan takeaway.
 - Pencarian materi secara lokal.
-- Kuis 10 soal pilihan ganda dengan feedback dan pembahasan.
-- Skor akhir dan checklist progres.
+- Kuis 10 soal pilihan ganda yang diacak dari bank 40+ soal, dengan feedback dan pembahasan.
+- Review jawaban salah, jawaban benar, penjelasan, dan pintasan ke materi terkait.
+- Progres materi tersimpan lokal, riwayat hingga 20 sesi kuis, dan skor terakhir.
+- Maskot anime interaktif Mika dengan animasi melayang, respons sentuhan, tips, dan pintasan kuis/materi.
 - Desain mobile-first dengan warna hangat, hijau hutan, aksen lime, dan komponen reusable.
 
 ## Stack
@@ -64,7 +66,9 @@ Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otom
 
 ```text
 .
-├── App.js                  # Root app, navigasi, layar, state kuis
+├── App.js                  # Root app, navigasi, layar, state kuis, dan maskot Mika
+├── assets/
+│   └── mascot.jpg          # Ilustrasi karakter anime untuk study buddy
 ├── app.json                # Metadata Expo dan base path GitHub Pages
 ├── package.json            # Dependency dan script
 ├── .github/
@@ -72,7 +76,8 @@ Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otom
 │       └── deploy-pages.yml # Build dan deploy otomatis
 ├── src/
 │   ├── data/
-│   │   └── lessons.js      # Konten modul dan bank soal
+│   │   ├── lessons.js      # Konten modul
+│   │   └── quizBank.js     # Bank soal acak beserta kunci/pembahasan
 │   └── theme.js            # Design tokens
 └── docs/
     ├── PRD.md              # Product Requirements Document
@@ -94,7 +99,9 @@ Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otom
 ## Catatan belajar
 
 - Soal dalam aplikasi adalah **latihan berdasarkan kisi-kisi**, bukan bocoran atau jaminan soal resmi.
-- Data progres hanya disimpan dalam state selama sesi; belum ada penyimpanan permanen atau backend.
+- Progres materi dan riwayat kuis disimpan lokal pada perangkat/browser melalui AsyncStorage; data tidak disinkronkan antarperangkat dan tidak memerlukan akun.
+- Hingga 20 sesi kuis terakhir disimpan, termasuk jawaban tiap soal agar review tetap tersedia setelah aplikasi dibuka kembali.
+- Build web diperiksa melalui GitHub Actions. Tampilan pada perangkat Android/iOS nyata tetap perlu diuji dengan Expo Go sebelum rilis mobile.
 - Contoh kode di dalam modul adalah bahan belajar dan tidak dieksekusi oleh aplikasi.
 - GitHub Pages menjalankan versi web dari aplikasi; tidak menggantikan instalasi aplikasi Android/iOS.
 - Periksa dokumentasi resmi untuk perubahan versi:
