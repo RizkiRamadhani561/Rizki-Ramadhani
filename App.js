@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -7,16 +7,14 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
-  Animated,
-  Platform,
 } from 'react-native';
-import Svg, { Circle, Ellipse, Path, Rect, G, Line } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from './src/theme';
 import { lessons } from './src/data/lessons';
 import { questionBank } from './src/data/quizBank';
+import MascotCoach from './src/components/MascotCoach';
 
 // Kunci berversi agar struktur penyimpanan dapat dimigrasikan kemudian.
 const STORAGE_KEY = '@kuliah-lab/progress-v2';
@@ -157,110 +155,6 @@ function StatCard({ icon, value, label, tint = colors.sage }) {
       </View>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  );
-}
-
-/** Ilustrasi Mika dibuat sebagai SVG agar tajam di web dan layar ponsel. */
-function MikaIllustration() {
-  return (
-    <Svg viewBox="0 0 160 215" width="100%" height="100%" accessibilityLabel="Mika, karakter anime perempuan dengan jaket hijau">
-      <Rect width="160" height="215" rx="15" fill="#E2E9DF" />
-      <Circle cx="130" cy="26" r="15" fill="#C9F06A" opacity="0.7" />
-      <Circle cx="20" cy="52" r="4" fill="#FFFFFF" />
-      <Path d="M43 82 C31 45 49 13 83 11 C117 9 137 31 135 75 L142 149 C142 177 128 199 116 215 L43 215 C34 183 33 150 38 123 Z" fill="#17211F" />
-      <Path d="M19 215 L25 167 C28 146 44 138 62 132 L103 132 C123 137 139 151 144 176 L150 215 Z" fill="#1F5B4B" />
-      <Path d="M25 168 C35 157 48 158 57 174 L67 215 L36 215 Z" fill="#164638" />
-      <Path d="M122 160 C132 154 141 166 145 184 L151 215 L123 215 L113 179 Z" fill="#164638" />
-      <Path d="M65 115 L65 143 C71 154 93 154 100 141 L97 112 Z" fill="#EAB49B" />
-      <Ellipse cx="45" cy="91" rx="8" ry="13" fill="#F1C4AA" />
-      <Ellipse cx="119" cy="91" rx="8" ry="13" fill="#F1C4AA" />
-      <Path d="M48 57 C49 34 64 25 83 26 C106 25 118 42 117 66 L113 99 C109 119 96 132 82 132 C66 131 53 117 50 98 Z" fill="#F7CFB8" />
-      <Path d="M47 67 C43 43 57 20 82 19 C109 17 124 39 119 69 L111 61 L105 43 C94 52 79 54 65 50 L53 76 Z" fill="#17211F" />
-      <Path d="M49 58 C51 40 65 28 81 28 C91 27 102 32 108 42 C91 49 76 48 65 44 C61 56 55 65 49 70 Z" fill="#263A33" />
-      <Path d="M49 66 C58 54 65 44 65 33 C74 47 89 49 105 41 C111 48 116 57 117 66 L108 59 L103 52 C88 59 68 58 57 72 Z" fill="#17211F" />
-      <Path d="M56 78 C62 71 72 71 78 78" stroke="#17211F" strokeWidth="3" strokeLinecap="round" fill="none" />
-      <Path d="M88 78 C95 71 105 72 110 79" stroke="#17211F" strokeWidth="3" strokeLinecap="round" fill="none" />
-      <Ellipse cx="67" cy="87" rx="10" ry="13" fill="#FFFFFF" />
-      <Ellipse cx="99" cy="87" rx="10" ry="13" fill="#FFFFFF" />
-      <Ellipse cx="68" cy="88" rx="7" ry="10" fill="#5C8D62" />
-      <Ellipse cx="99" cy="88" rx="7" ry="10" fill="#5C8D62" />
-      <Ellipse cx="68" cy="90" rx="4" ry="7" fill="#17211F" />
-      <Ellipse cx="99" cy="90" rx="4" ry="7" fill="#17211F" />
-      <Circle cx="65" cy="83" r="3" fill="#FFFFFF" />
-      <Circle cx="96" cy="83" r="3" fill="#FFFFFF" />
-      <Circle cx="71" cy="94" r="1.7" fill="#FFFFFF" />
-      <Circle cx="102" cy="94" r="1.7" fill="#FFFFFF" />
-      <Path d="M80 97 L78 102 L82 103" stroke="#D79A84" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <Path d="M72 111 C78 118 88 118 94 109 C88 113 79 114 72 111 Z" fill="#A8444D" />
-      <Path d="M72 111 C79 113 87 112 93 109" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" fill="none" />
-      <Path d="M48 80 C46 61 53 47 63 36 C59 56 55 70 48 80 Z" fill="#17211F" />
-      <Path d="M104 44 C117 54 120 68 118 82 C114 73 109 63 104 44 Z" fill="#17211F" />
-      <Path d="M111 48 L120 38 L116 52 L125 46" stroke="#C9F06A" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" fill="none" />
-      <Path d="M57 142 L81 160 L105 141 L99 133 C91 145 73 145 64 133 Z" fill="#F7F5EF" />
-      <Path d="M81 160 L81 201" stroke="#B8C9BD" strokeWidth="2.5" />
-      <Path d="M50 174 L71 167 L83 179 L62 198 Z" fill="#F7F5EF" stroke="#164638" strokeWidth="2" />
-      <Path d="M56 180 L70 175" stroke="#C9F06A" strokeWidth="2" strokeLinecap="round" />
-      <Path d="M122 127 L129 119 L128 130 L136 126" stroke="#C9F06A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <Circle cx="28" cy="32" r="3" fill="#1F5B4B" />
-      <Path d="M20 39 L24 35 L28 39 L24 43 Z" fill="#C9F06A" />
-    </Svg>
-  );
-}
-
-/** Maskot Mika mengambang, merespons sentuhan, dan memberi tips belajar. */
-function MascotCoach({ completedCount, quizScore, onTapLessons, onStartQuiz }) {
-  const [tipIndex, setTipIndex] = useState(0);
-  const floating = useRef(new Animated.Value(0)).current;
-  const pulse = useRef(new Animated.Value(1)).current;
-  // React Native Web does not provide the native animation driver.
-  const useNativeDriver = Platform.OS !== 'web';
-
-  // Loop berhenti saat komponen dilepas agar animasi tidak berjalan di belakang layar.
-  useEffect(() => {
-    const loop = Animated.loop(Animated.sequence([
-      Animated.timing(floating, { toValue: 1, duration: 1250, useNativeDriver }),
-      Animated.timing(floating, { toValue: 0, duration: 1250, useNativeDriver }),
-    ]));
-    loop.start();
-    return () => loop.stop();
-  }, [floating]);
-
-  // Pesan mengikuti progres dan skor terakhir agar maskot terasa personal.
-  const tips = [
-    { title: 'Hai, aku Mika! ✨', message: 'Tap aku kapan saja untuk mendapat dorongan semangat belajar.' },
-    { title: 'Pelan-pelan asal paham.', message: completedCount > 0 ? `Kamu sudah menuntaskan ${completedCount} dari ${lessons.length} modul. Teruskan, ya!` : 'Mulai dari satu modul dulu. Nggak perlu buru-buru.' },
-    { title: 'Siap tantangan kecil?', message: quizScore === null ? 'Coba kuis singkat untuk melihat konsep yang sudah kamu kuasai.' : `Skor terakhir kamu ${quizScore}%. Yuk, review materi yang masih menantang!` },
-  ];
-
-  /** Berpindah tips dan memberi respons pulse saat pengguna menyentuh karakter. */
-  function showNextTip() {
-    setTipIndex((current) => (current + 1) % tips.length);
-    Animated.sequence([
-      Animated.spring(pulse, { toValue: 1.07, useNativeDriver, speed: 22, bounciness: 8 }),
-      Animated.spring(pulse, { toValue: 1, useNativeDriver, speed: 18, bounciness: 5 }),
-    ]).start();
-  }
-
-  const translateY = floating.interpolate({ inputRange: [0, 1], outputRange: [0, -5] });
-  return (
-    <View style={styles.mascotCard}>
-      <Pressable accessibilityRole="button" accessibilityLabel="Minta tips belajar dari Mika" onPress={showNextTip} style={styles.mascotPortraitPressable}>
-        <Animated.View style={[styles.mascotPortrait, { transform: [{ translateY }, { scale: pulse }] }]}>
-          <MikaIllustration />
-        </Animated.View>
-        <View style={styles.mascotSparkle}><AppIcon name="sparkles" size={13} color={colors.forest} /></View>
-      </Pressable>
-      <View style={styles.mascotContent}>
-        <Text style={styles.mascotEyebrow}>MIKA · STUDY BUDDY</Text>
-        <Text style={styles.mascotTitle}>{tips[tipIndex].title}</Text>
-        <Text style={styles.mascotMessage}>{tips[tipIndex].message}</Text>
-        <View style={styles.mascotActions}>
-          <Pressable accessibilityRole="button" onPress={showNextTip} style={styles.mascotChip}><Text style={styles.mascotChipText}>Tips lagi</Text></Pressable>
-          <Pressable accessibilityRole="button" onPress={onStartQuiz} style={[styles.mascotChip, styles.mascotChipPrimary]}><Text style={[styles.mascotChipText, styles.mascotChipTextPrimary]}>Mulai kuis</Text></Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel="Buka semua materi" onPress={onTapLessons} style={styles.mascotIconButton}><AppIcon name="arrow-forward" size={15} color={colors.forest} /></Pressable>
-        </View>
-      </View>
     </View>
   );
 }
@@ -1154,21 +1048,6 @@ const styles = StyleSheet.create({
 
   loadingState: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md, padding: spacing.xl },
   loadingText: { color: colors.muted, fontSize: 13, fontWeight: '700' },
-  mascotCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, backgroundColor: colors.surface, overflow: 'hidden', minHeight: 146 },
-  mascotPortraitPressable: { width: 86, height: 132, position: 'relative', justifyContent: 'center', alignItems: 'center' },
-  mascotPortrait: { width: 80, height: 126, borderRadius: 15, overflow: 'hidden', backgroundColor: colors.sage },
-  mascotImage: { width: '100%', height: '100%' },
-  mascotSparkle: { position: 'absolute', top: 3, right: 0, width: 25, height: 25, borderRadius: 13, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.lime, alignItems: 'center', justifyContent: 'center' },
-  mascotContent: { flex: 1, gap: 5 },
-  mascotEyebrow: { color: colors.forest, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
-  mascotTitle: { color: colors.ink, fontSize: 16, fontWeight: '900', letterSpacing: -0.3 },
-  mascotMessage: { color: colors.muted, fontSize: 12, lineHeight: 17 },
-  mascotActions: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' },
-  mascotChip: { paddingHorizontal: 9, paddingVertical: 7, borderRadius: radius.pill, backgroundColor: colors.sage },
-  mascotChipText: { color: colors.forest, fontSize: 10, fontWeight: '800' },
-  mascotChipPrimary: { backgroundColor: colors.forest },
-  mascotChipTextPrimary: { color: colors.surface },
-  mascotIconButton: { width: 28, height: 28, borderRadius: radius.pill, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   historyList: { gap: spacing.sm },
   historyCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md },
   historyScoreMark: { width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.sage },
