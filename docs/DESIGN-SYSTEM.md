@@ -38,13 +38,13 @@ Gunakan rhythm 4/8 dp: 4, 8, 12, 16, 24, 32, 40. Radius: 10 untuk kontrol kecil,
 - **Quiz option:** area tekan luas, state selected/correct/incorrect, pembahasan setelah submit.
 - **Progress:** tampilkan angka atau teks bersama bar.
 - **Bottom navigation:** empat tujuan: Beranda, Materi, Kuis, Progres; label selalu terlihat.
-- **Mika / study buddy:** ilustrasi SVG lokal dengan gerak mengambang, respons pulse saat ditekan, tips kontekstual, dan pintasan ke kuis/materi.
+- **Mika / study buddy:** portrait anime lokal `assets/mika.jpg`. Versi web memakai Motion (`motion/react`) untuk floating, hover tilt dengan perspektif `rotateX`/`rotateY`, dan respons tap. Versi Android/iOS memakai React Native Animated agar tetap lintas platform.
 
 ## Aksesibilitas
 - Label teks pada navigasi dan aksi penting.
 - Target sentuh direkomendasikan 44–48 dp atau lebih.
 - Jangan mengandalkan warna saja untuk feedback.
-- Maskot dekoratif memiliki label aksesibilitas; tips dapat diaktifkan melalui kontrol yang berlabel jelas.
+- Maskot memiliki deskripsi aksesibilitas; tips dapat diaktifkan melalui kontrol yang berlabel jelas. Animasi web menghormati preferensi reduced-motion.
 - Urutan baca mengikuti urutan visual.
 - Uji font besar, layar kecil, dan screen reader.
 
@@ -55,4 +55,4 @@ Gunakan rhythm 4/8 dp: 4, 8, 12, 16, 24, 32, 40. Radius: 10 untuk kontrol kecil,
 - WCAG 2.2: https://www.w3.org/TR/WCAG22/
 
 ## Catatan implementasi
-Design tokens aktif berada di `src/theme.js`. Referensi visual Mobbin tidak digunakan karena akses pencariannya membutuhkan paket berbayar; tidak ada tampilan brand lain yang disalin.
+Design tokens aktif berada di `src/theme.js`. Implementasi maskot dipisahkan sebagai `MascotCoach.web.js` dan `MascotCoach.native.js`, sehingga dependensi browser-only tidak masuk ke bundel Android/iOS. Referensi visual Mobbin tidak digunakan karena akses pencariannya membutuhkan paket berbayar; tidak ada tampilan brand lain yang disalin.
