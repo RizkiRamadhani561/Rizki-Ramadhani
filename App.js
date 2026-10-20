@@ -837,8 +837,19 @@ export default function App() {
     setFeedbackVisible(false);
   }
 
-  // Bila detail materi terbuka, tampilkan detail di atas navigasi tab yang sama.
+  // Review menjadi layar mandiri, tetapi jawaban asli tetap tersimpan di riwayat.
   const screen = useMemo(() => {
+    if (selectedReviewAttempt) {
+      return (
+        <ReviewScreen
+          reviewAttempt={selectedReviewAttempt}
+          onBack={() => setSelectedReviewAttempt(null)}
+          onOpenLesson={(lesson) => { setSelectedReviewAttempt(null); openLesson(lesson); }}
+        />
+      );
+    }
+
+    // Bila detail materi terbuka, tampilkan detail di atas navigasi tab yang sama.
     if (selectedLesson) {
       return (
         <LessonDetailScreen
@@ -857,12 +868,15 @@ export default function App() {
     if (activeTab === 'quiz') {
       return (
         <QuizScreen
+          questions={quizSessionQuestions}
+          attempt={currentAttempt}
+          onReviewAttempt={setSelectedReviewAttempt}
           questionIndex={questionIndex}
           selectedAnswer={selectedAnswer}
           answers={answers}
           feedbackVisible={feedbackVisible}
           quizFinished={quizFinished}
-          score={quizScore ?? 0}
+          score={currentAttempt?.score ?? quizScore ?? 0}
           onSelectAnswer={setSelectedAnswer}
           onCheckAnswer={checkAnswer}
           onNextQuestion={nextQuestion}
@@ -876,8 +890,10 @@ export default function App() {
         <ProgressScreen
           completedIds={completedIds}
           quizScore={quizScore}
+          quizHistory={quizHistory}
           onOpenLesson={openLesson}
           onStartQuiz={restartQuiz}
+          onReviewAttempt={setSelectedReviewAttempt}
         />
       );
     }
@@ -892,7 +908,7 @@ export default function App() {
         onSeeLessons={() => setActiveTab('lessons')}
       />
     );
-  }, [activeTab, selectedLesson, completedIds, questionIndex, selectedAnswer, answers, feedbackVisible, quizFinished, quizScore, completedCount]);
+  }, [activeTab, selectedLesson, selectedReviewAttempt, completedIds, questionIndex, selectedAnswer, answers, feedbackVisible, quizFinished, quizScore, completedCount, quizSessionQuestions, currentAttempt, quizHistory]);
 
   return (
     <SafeAreaView style={styles.appShell}>
@@ -912,8 +928,15 @@ export default function App() {
           <Text style={styles.topBarLabel}>UTS PREP</Text>
         </View>
       </View>
-      <View style={styles.screenArea}>{screen}</View>
-      {!selectedLesson ? <BottomNavigation activeTab={activeTab} onChange={(tab) => { setSelectedLesson(null); setActiveTab(tab); }} /> : null}
+      <View style={styles.screenArea}>
+        {hasLoadedProgress ? screen : (
+          <View style={styles.loadingState}>
+            <AppIcon name="leaf-outline" size={26} color={colors.forest} />
+            <Text style={styles.loadingText}>Memuat progres belajarmu…</Text>
+          </View>
+        )}
+      </View>
+      {hasLoadedProgress && !selectedLesson && !selectedReviewAttempt ? <BottomNavigation activeTab={activeTab} onChange={(tab) => { setSelectedLesson(null); setSelectedReviewAttempt(null); setActiveTab(tab); }} /> : null}
     </SafeAreaView>
   );
 }
