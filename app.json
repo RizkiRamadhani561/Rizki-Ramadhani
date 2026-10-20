@@ -19,7 +19,11 @@
       "bundleIdentifier": "com.kuliahlab.mobile"
     },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "output": "single"
+    },
+    "experiments": {
+      "baseUrl": "/Rizki-Ramadhani"
     }
   }
 }
