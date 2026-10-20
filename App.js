@@ -144,7 +144,7 @@ function StatCard({ icon, value, label, tint = colors.sage }) {
 }
 
 /** Beranda berisi CTA utama dan materi yang disarankan untuk dilanjutkan. */
-function HomeScreen({ completedCount, quizScore, onOpenLesson, onStartQuiz, onSeeLessons }) {
+function HomeScreen({ completedCount, completedIds, quizScore, onOpenLesson, onStartQuiz, onSeeLessons }) {
   const continueLesson = lessons.find((item) => item.id === 'state-props') || lessons[0];
 
   return (
@@ -200,7 +200,7 @@ function HomeScreen({ completedCount, quizScore, onOpenLesson, onStartQuiz, onSe
           <LessonCard
             key={lesson.id}
             lesson={lesson}
-            completed={lesson._completed === true}
+            completed={completedIds.includes(lesson.id)}
             onPress={() => onOpenLesson(lesson)}
           />
         ))}
@@ -666,6 +666,7 @@ export default function App() {
     return (
       <HomeScreen
         completedCount={completedCount}
+        completedIds={completedIds}
         quizScore={quizScore}
         onOpenLesson={openLesson}
         onStartQuiz={restartQuiz}
@@ -753,7 +754,7 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 21, fontWeight: '900', letterSpacing: -0.5, color: colors.ink },
   statLabel: { fontSize: 11, lineHeight: 15, color: colors.muted, fontWeight: '600' },
   sectionHeadingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.md },
-  sectionTitle: { color: colors.ink, fontSize: 19, lineHeight: 25, fontWeight: '850', letterSpacing: -0.4 },
+  sectionTitle: { color: colors.ink, fontSize: 19, lineHeight: 25, fontWeight: '800', letterSpacing: -0.4 },
   sectionCaption: { marginTop: 4, fontSize: 12, lineHeight: 17, color: colors.muted },
   textLink: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 8 },
   textLinkLabel: { color: colors.forest, fontSize: 12, fontWeight: '800' },
@@ -777,7 +778,7 @@ const styles = StyleSheet.create({
   quizPromo: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.lg, borderRadius: radius.md, backgroundColor: '#E9EBDD', borderWidth: 1, borderColor: '#DCE2D3' },
   quizPromoIcon: { width: 42, height: 42, borderRadius: 14, backgroundColor: colors.lime, alignItems: 'center', justifyContent: 'center' },
   quizPromoCopy: { flex: 1, gap: 4 },
-  quizPromoTitle: { color: colors.ink, fontSize: 14, fontWeight: '850' },
+  quizPromoTitle: { color: colors.ink, fontSize: 14, fontWeight: '800' },
   quizPromoText: { color: colors.muted, fontSize: 12, lineHeight: 17 },
   disclaimer: { marginTop: -spacing.md, color: colors.muted, fontSize: 11, lineHeight: 16, textAlign: 'center' },
   pageHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.md },
@@ -809,7 +810,7 @@ const styles = StyleSheet.create({
   keyPointNumber: { width: 31, height: 31, borderRadius: 11, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center' },
   keyPointNumberText: { color: colors.forest, fontSize: 10, fontWeight: '900' },
   keyPointCopy: { flex: 1, gap: 4, paddingTop: 2 },
-  keyPointTitle: { color: colors.ink, fontSize: 15, fontWeight: '850' },
+  keyPointTitle: { color: colors.ink, fontSize: 15, fontWeight: '800' },
   keyPointDetail: { color: colors.muted, fontSize: 13, lineHeight: 20 },
   codePanel: { backgroundColor: '#172823', borderRadius: radius.md, overflow: 'hidden' },
   codePanelHeader: { height: 46, paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: '#30463E' },
@@ -828,7 +829,7 @@ const styles = StyleSheet.create({
   quizQuestionOf: { color: colors.muted, fontWeight: '700' },
   quizTopic: { color: colors.forest, fontSize: 11, fontWeight: '800', backgroundColor: colors.sage, paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.pill },
   questionCard: { backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.line, padding: spacing.xl, minHeight: 150, justifyContent: 'center' },
-  questionText: { color: colors.ink, fontSize: 22, lineHeight: 30, fontWeight: '850', letterSpacing: -0.4 },
+  questionText: { color: colors.ink, fontSize: 22, lineHeight: 30, fontWeight: '800', letterSpacing: -0.4 },
   answerList: { gap: spacing.sm },
   answerOption: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, borderRadius: radius.md },
   answerOptionSelected: { borderColor: colors.forest, backgroundColor: '#F0F5F0' },
@@ -840,7 +841,7 @@ const styles = StyleSheet.create({
   answerLetterWrong: { backgroundColor: colors.coral, borderColor: colors.coral },
   answerLetterText: { color: colors.muted, fontSize: 12, fontWeight: '900' },
   answerLetterTextActive: { color: colors.surface },
-  answerText: { flex: 1, color: colors.ink, fontSize: 14, lineHeight: 20, fontWeight: '650' },
+  answerText: { flex: 1, color: colors.ink, fontSize: 14, lineHeight: 20, fontWeight: '600' },
   feedbackCard: { padding: spacing.lg, borderRadius: radius.md, borderWidth: 1, gap: spacing.sm },
   feedbackCorrect: { backgroundColor: colors.successSoft, borderColor: '#C6E0CE' },
   feedbackWrong: { backgroundColor: colors.coralSoft, borderColor: '#EFD0C8' },
