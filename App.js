@@ -9,6 +9,7 @@ import {
   TextInput,
   Image,
   Animated,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
@@ -165,12 +166,14 @@ function MascotCoach({ completedCount, quizScore, onTapLessons, onStartQuiz }) {
   const [tipIndex, setTipIndex] = useState(0);
   const floating = useRef(new Animated.Value(0)).current;
   const pulse = useRef(new Animated.Value(1)).current;
+  // React Native Web does not provide the native animation driver.
+  const useNativeDriver = Platform.OS !== 'web';
 
   // Loop berhenti saat komponen dilepas agar animasi tidak berjalan di belakang layar.
   useEffect(() => {
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(floating, { toValue: 1, duration: 1250, useNativeDriver: true }),
-      Animated.timing(floating, { toValue: 0, duration: 1250, useNativeDriver: true }),
+      Animated.timing(floating, { toValue: 1, duration: 1250, useNativeDriver }),
+      Animated.timing(floating, { toValue: 0, duration: 1250, useNativeDriver }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -187,8 +190,8 @@ function MascotCoach({ completedCount, quizScore, onTapLessons, onStartQuiz }) {
   function showNextTip() {
     setTipIndex((current) => (current + 1) % tips.length);
     Animated.sequence([
-      Animated.spring(pulse, { toValue: 1.07, useNativeDriver: true, speed: 22, bounciness: 8 }),
-      Animated.spring(pulse, { toValue: 1, useNativeDriver: true, speed: 18, bounciness: 5 }),
+      Animated.spring(pulse, { toValue: 1.07, useNativeDriver, speed: 22, bounciness: 8 }),
+      Animated.spring(pulse, { toValue: 1, useNativeDriver, speed: 18, bounciness: 5 }),
     ]).start();
   }
 
