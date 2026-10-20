@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "KULIAH LAB",
+    "slug": "kuliah-lab",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#F7F5EF"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F7F5EF"
+      },
+      "package": "com.kuliahlab.mobile"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kuliahlab.mobile"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
