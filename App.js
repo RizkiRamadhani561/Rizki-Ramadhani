@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -7,11 +7,29 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
+  Image,
+  Animated,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from './src/theme';
-import { lessons, quizQuestions } from './src/data/lessons';
+import { lessons } from './src/data/lessons';
+import { questionBank } from './src/data/quizBank';
+
+// Kunci berversi agar struktur penyimpanan dapat dimigrasikan kemudian.
+const STORAGE_KEY = '@kuliah-lab/progress-v2';
+const QUESTIONS_PER_QUIZ = 10;
+
+/** Mengacak salinan array dengan Fisher-Yates tanpa mengubah bank asli. */
+function shuffleQuestions(source) {
+  const shuffled = [...source];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
 
 /**
  * KULIAH LAB — aplikasi belajar Mobile Programming.
@@ -142,6 +160,61 @@ function StatCard({ icon, value, label, tint = colors.sage }) {
   );
 }
 
+/** Maskot Mika mengambang, merespons sentuhan, dan memberi tips belajar. */
+function MascotCoach({ completedCount, quizScore, onTapLessons, onStartQuiz }) {
+  const [tipIndex, setTipIndex] = useState(0);
+  const floating = useRef(new Animated.Value(0)).current;
+  const pulse = useRef(new Animated.Value(1)).current;
+
+  // Loop berhenti saat komponen dilepas agar animasi tidak berjalan di belakang layar.
+  useEffect(() => {
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(floating, { toValue: 1, duration: 1250, useNativeDriver: true }),
+      Animated.timing(floating, { toValue: 0, duration: 1250, useNativeDriver: true }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [floating]);
+
+  // Pesan mengikuti progres dan skor terakhir agar maskot terasa personal.
+  const tips = [
+    { title: 'Hai, aku Mika! ✨', message: 'Tap aku kapan saja untuk mendapat dorongan semangat belajar.' },
+    { title: 'Pelan-pelan asal paham.', message: completedCount > 0 ? `Kamu sudah menuntaskan ${completedCount} dari ${lessons.length} modul. Teruskan, ya!` : 'Mulai dari satu modul dulu. Nggak perlu buru-buru.' },
+    { title: 'Siap tantangan kecil?', message: quizScore === null ? 'Coba kuis singkat untuk melihat konsep yang sudah kamu kuasai.' : `Skor terakhir kamu ${quizScore}%. Yuk, review materi yang masih menantang!` },
+  ];
+
+  /** Berpindah tips dan memberi respons pulse saat pengguna menyentuh karakter. */
+  function showNextTip() {
+    setTipIndex((current) => (current + 1) % tips.length);
+    Animated.sequence([
+      Animated.spring(pulse, { toValue: 1.07, useNativeDriver: true, speed: 22, bounciness: 8 }),
+      Animated.spring(pulse, { toValue: 1, useNativeDriver: true, speed: 18, bounciness: 5 }),
+    ]).start();
+  }
+
+  const translateY = floating.interpolate({ inputRange: [0, 1], outputRange: [0, -5] });
+  return (
+    <View style={styles.mascotCard}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Minta tips belajar dari Mika" onPress={showNextTip} style={styles.mascotPortraitPressable}>
+        <Animated.View style={[styles.mascotPortrait, { transform: [{ translateY }, { scale: pulse }] }]}>
+          <Image source={require('./assets/mascot.jpg')} accessibilityLabel="Mika, karakter anime perempuan berjaket hijau" resizeMode="cover" style={styles.mascotImage} />
+        </Animated.View>
+        <View style={styles.mascotSparkle}><AppIcon name="sparkles" size={13} color={colors.forest} /></View>
+      </Pressable>
+      <View style={styles.mascotContent}>
+        <Text style={styles.mascotEyebrow}>MIKA · STUDY BUDDY</Text>
+        <Text style={styles.mascotTitle}>{tips[tipIndex].title}</Text>
+        <Text style={styles.mascotMessage}>{tips[tipIndex].message}</Text>
+        <View style={styles.mascotActions}>
+          <Pressable accessibilityRole="button" onPress={showNextTip} style={styles.mascotChip}><Text style={styles.mascotChipText}>Tips lagi</Text></Pressable>
+          <Pressable accessibilityRole="button" onPress={onStartQuiz} style={[styles.mascotChip, styles.mascotChipPrimary]}><Text style={[styles.mascotChipText, styles.mascotChipTextPrimary]}>Mulai kuis</Text></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Buka semua materi" onPress={onTapLessons} style={styles.mascotIconButton}><AppIcon name="arrow-forward" size={15} color={colors.forest} /></Pressable>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 /** Beranda berisi CTA utama dan materi yang disarankan untuk dilanjutkan. */
 function HomeScreen({ completedCount, completedIds, quizScore, onOpenLesson, onStartQuiz, onSeeLessons }) {
   const continueLesson = lessons.find((item) => item.id === 'state-props') || lessons[0];
@@ -176,6 +249,8 @@ function HomeScreen({ completedCount, completedIds, quizScore, onOpenLesson, onS
         <View style={styles.heroDecorOne} />
         <View style={styles.heroDecorTwo} />
       </View>
+
+      <MascotCoach completedCount={completedCount} quizScore={quizScore} onTapLessons={onSeeLessons} onStartQuiz={onStartQuiz} />
 
       <View style={styles.statsRow}>
         <StatCard icon="book-outline" value={String(lessons.length)} label="Modul ringkas" />
@@ -858,6 +933,43 @@ const styles = StyleSheet.create({
   resultStatValue: { color: colors.ink, fontSize: 20, fontWeight: '900' },
   resultStatLabel: { color: colors.muted, fontSize: 11, fontWeight: '600' },
   resultStatDivider: { width: 1, height: 32, backgroundColor: colors.line },
+
+  loadingState: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md, padding: spacing.xl },
+  loadingText: { color: colors.muted, fontSize: 13, fontWeight: '700' },
+  mascotCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, backgroundColor: colors.surface, overflow: 'hidden', minHeight: 146 },
+  mascotPortraitPressable: { width: 86, height: 132, position: 'relative', justifyContent: 'center', alignItems: 'center' },
+  mascotPortrait: { width: 80, height: 126, borderRadius: 15, overflow: 'hidden', backgroundColor: colors.sage },
+  mascotImage: { width: '100%', height: '100%' },
+  mascotSparkle: { position: 'absolute', top: 3, right: 0, width: 25, height: 25, borderRadius: 13, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.lime, alignItems: 'center', justifyContent: 'center' },
+  mascotContent: { flex: 1, gap: 5 },
+  mascotEyebrow: { color: colors.forest, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
+  mascotTitle: { color: colors.ink, fontSize: 16, fontWeight: '900', letterSpacing: -0.3 },
+  mascotMessage: { color: colors.muted, fontSize: 12, lineHeight: 17 },
+  mascotActions: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' },
+  mascotChip: { paddingHorizontal: 9, paddingVertical: 7, borderRadius: radius.pill, backgroundColor: colors.sage },
+  mascotChipText: { color: colors.forest, fontSize: 10, fontWeight: '800' },
+  mascotChipPrimary: { backgroundColor: colors.forest },
+  mascotChipTextPrimary: { color: colors.surface },
+  mascotIconButton: { width: 28, height: 28, borderRadius: radius.pill, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  historyList: { gap: spacing.sm },
+  historyCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md },
+  historyScoreMark: { width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.sage },
+  historyScoreMarkText: { fontSize: 12, fontWeight: '900', color: colors.forest },
+  historyCardCopy: { flex: 1, gap: 4 },
+  historyCardTitle: { fontSize: 13, fontWeight: '800', color: colors.ink },
+  historyCardMeta: { fontSize: 11, color: colors.muted },
+  historyReviewButton: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 8, borderRadius: radius.pill, backgroundColor: colors.sage },
+  historyReviewText: { color: colors.forest, fontSize: 11, fontWeight: '900' },
+  reviewQuestionCard: { gap: spacing.md, padding: spacing.lg, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface },
+  reviewMetaRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
+  reviewNumber: { color: colors.muted, fontSize: 10, fontWeight: '900', letterSpacing: 0.8 },
+  reviewQuestion: { color: colors.ink, fontSize: 17, lineHeight: 24, fontWeight: '800' },
+  reviewAnswerBox: { gap: 5, borderRadius: radius.md, borderWidth: 1, padding: spacing.md },
+  reviewAnswerWrong: { backgroundColor: colors.coralSoft, borderColor: '#EFD0C8' },
+  reviewAnswerCorrect: { backgroundColor: colors.successSoft, borderColor: '#C6E0CE' },
+  reviewAnswerLabel: { color: colors.muted, fontSize: 9, fontWeight: '900', letterSpacing: 0.9 },
+  reviewAnswerText: { color: colors.ink, fontSize: 13, lineHeight: 19, fontWeight: '700' },
+  reviewExplanation: { gap: 6, padding: spacing.md, backgroundColor: colors.paper, borderRadius: radius.md },
   progressOverview: { backgroundColor: colors.forest, borderRadius: radius.lg, padding: spacing.xl, gap: spacing.lg },
   progressOverviewTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   progressOverviewLabel: { color: '#C4D8CD', fontSize: 10, fontWeight: '900', letterSpacing: 1 },
