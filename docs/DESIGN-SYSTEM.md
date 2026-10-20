@@ -38,11 +38,13 @@ Gunakan rhythm 4/8 dp: 4, 8, 12, 16, 24, 32, 40. Radius: 10 untuk kontrol kecil,
 - **Quiz option:** area tekan luas, state selected/correct/incorrect, pembahasan setelah submit.
 - **Progress:** tampilkan angka atau teks bersama bar.
 - **Bottom navigation:** empat tujuan: Beranda, Materi, Kuis, Progres; label selalu terlihat.
+- **Mika / study buddy:** ilustrasi SVG lokal dengan gerak mengambang, respons pulse saat ditekan, tips kontekstual, dan pintasan ke kuis/materi.
 
 ## Aksesibilitas
 - Label teks pada navigasi dan aksi penting.
 - Target sentuh direkomendasikan 44–48 dp atau lebih.
 - Jangan mengandalkan warna saja untuk feedback.
+- Maskot dekoratif memiliki label aksesibilitas; tips dapat diaktifkan melalui kontrol yang berlabel jelas.
 - Urutan baca mengikuti urutan visual.
 - Uji font besar, layar kecil, dan screen reader.
 
