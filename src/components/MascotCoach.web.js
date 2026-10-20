@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 
 // Mika uses the shared illustrated portrait. Web-only transforms add a 3D depth effect.
-const mikaPortrait = 'https://assets.devmotion.app/lu3V2D3blZwpFneoCl4WU1qyWm6ArLY0/media/image/jujnzRk6O-WscJ1zm903Z.png';
+const mikaPortrait = 'https://gcdn.picsart.com/pipeline-output/ecfeab13-e1a4-4a84-aec2-e81c25ffcdfe.png';
 
 /** Responsive web version of Mika with perspective, float, hover tilt, and tap response. */
 export default function MascotCoach({ completedCount, quizScore, onTapLessons, onStartQuiz }) {
