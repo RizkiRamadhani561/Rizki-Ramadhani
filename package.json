@@ -19,7 +19,7 @@
     "react-native": "0.81.4",
     "react-native-web": "~0.21.0",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "react-native-svg": "15.12.1"
+    "motion": "^12.23.24"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"
