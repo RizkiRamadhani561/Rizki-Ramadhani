@@ -558,7 +558,7 @@ function QuizScreen({
 }
 
 /** Ringkasan progres dari materi yang ditandai selesai dan skor kuis terakhir. */
-function ProgressScreen({ completedIds, quizScore, onOpenLesson, onStartQuiz }) {
+function ProgressScreen({ completedIds, quizScore, quizHistory, onOpenLesson, onStartQuiz, onReviewAttempt }) {
   const percent = Math.round((completedIds.length / lessons.length) * 100);
   const nextLesson = lessons.find((lesson) => !completedIds.includes(lesson.id)) || lessons[0];
 
@@ -593,6 +593,35 @@ function ProgressScreen({ completedIds, quizScore, onOpenLesson, onStartQuiz }) 
           <LessonCard key={lesson.id} lesson={lesson} completed={completedIds.includes(lesson.id)} onPress={() => onOpenLesson(lesson)} compact />
         ))}
       </View>
+
+      <View style={styles.sectionHeadingRow}>
+        <View>
+          <Text style={styles.sectionTitle}>Riwayat kuis</Text>
+          <Text style={styles.sectionCaption}>Skor latihan tersimpan di perangkat ini.</Text>
+        </View>
+      </View>
+      {quizHistory.length ? (
+        <View style={styles.historyList}>
+          {quizHistory.slice(0, 8).map((attempt) => (
+            <View key={attempt.id} style={styles.historyCard}>
+              <View style={styles.historyScoreMark}><Text style={styles.historyScoreMarkText}>{attempt.score}%</Text></View>
+              <View style={styles.historyCardCopy}>
+                <Text style={styles.historyCardTitle}>{attempt.correctCount}/{attempt.total} jawaban benar</Text>
+                <Text style={styles.historyCardMeta}>{new Date(attempt.timestamp).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</Text>
+              </View>
+              <Pressable accessibilityRole="button" onPress={() => onReviewAttempt(attempt)} style={styles.historyReviewButton}>
+                <Text style={styles.historyReviewText}>Review</Text><AppIcon name="chevron-forward" size={15} color={colors.forest} />
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={styles.emptyState}>
+          <AppIcon name="time-outline" size={28} color={colors.muted} />
+          <Text style={styles.emptyTitle}>Belum ada riwayat</Text>
+          <Text style={styles.emptyText}>Kerjakan kuis pertamamu untuk menyimpan skor dan pembahasan di sini.</Text>
+        </View>
+      )}
 
       <View style={styles.nextStepCard}>
         <Eyebrow tone="green">LANGKAH SELANJUTNYA</Eyebrow>
@@ -692,17 +721,53 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   // selectedLesson menyimpan materi yang sedang dibaca; null berarti tidak ada detail terbuka.
   const [selectedLesson, setSelectedLesson] = useState(null);
-  // completedIds menyimpan id materi yang telah ditandai selesai selama sesi aplikasi.
-  const [completedIds, setCompletedIds] = useState(['components']);
-  // Kumpulan state kuis: indeks soal, jawaban, feedback, dan status selesai.
+  // Progres dan riwayat kuis di-hydrate dari penyimpanan lokal ketika aplikasi dibuka.
+  const [completedIds, setCompletedIds] = useState([]);
+  const [quizHistory, setQuizHistory] = useState([]);
+  const [hasLoadedProgress, setHasLoadedProgress] = useState(false);
+  const [selectedReviewAttempt, setSelectedReviewAttempt] = useState(null);
+
+  // Setiap sesi berisi sepuluh soal berbeda yang diacak dari bank soal.
+  const [quizSessionQuestions, setQuizSessionQuestions] = useState(() => shuffleQuestions(questionBank).slice(0, QUESTIONS_PER_QUIZ));
+  const [currentAttempt, setCurrentAttempt] = useState(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
-  const [quizScore, setQuizScore] = useState(null);
 
-  // Hitung jumlah materi selesai dari daftar id yang tersimpan.
+  // Ambil skor sesi aktif atau hasil terakhir yang tersimpan.
+  const quizScore = currentAttempt?.score ?? quizHistory[0]?.score ?? null;
+
+  // Muat progres sekali saat aplikasi dibuka; kegagalan storage tidak memblokir UI.
+  useEffect(() => {
+    let isMounted = true;
+    async function loadSavedProgress() {
+      try {
+        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (!isMounted || !raw) return;
+        const saved = JSON.parse(raw);
+        if (Array.isArray(saved.completedIds)) setCompletedIds(saved.completedIds);
+        if (Array.isArray(saved.quizHistory)) setQuizHistory(saved.quizHistory);
+      } catch (error) {
+        // Data rusak atau storage tidak tersedia ditangani dengan aman.
+      } finally {
+        if (isMounted) setHasLoadedProgress(true);
+      }
+    }
+    loadSavedProgress();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Simpan hanya sesudah hydration supaya state awal tidak menimpa data lama.
+  useEffect(() => {
+    if (!hasLoadedProgress) return;
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ completedIds, quizHistory })).catch(() => {
+      // UI tetap dapat digunakan meskipun perangkat menolak operasi penyimpanan.
+    });
+  }, [completedIds, quizHistory, hasLoadedProgress]);
+
+  // Hitung jumlah materi yang selesai untuk statistik dashboard.
   const completedCount = completedIds.length;
 
   /** Membuka detail materi dan berpindah ke tab Materi. */
