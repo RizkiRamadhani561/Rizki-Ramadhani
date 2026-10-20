@@ -33,6 +33,8 @@ Setiap push ke branch `main` akan otomatis membangun ulang versi web dan menerbi
 - Expo SDK 54
 - JavaScript
 - `@expo/vector-icons`
+- `@react-native-async-storage/async-storage` untuk progres dan riwayat lokal
+- `react-native-svg` untuk ilustrasi maskot vektor
 - React Native Web untuk versi browser
 
 ## Jalankan di komputer
@@ -66,9 +68,7 @@ Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otom
 
 ```text
 .
-├── App.js                  # Root app, navigasi, layar, state kuis, dan maskot Mika
-├── assets/
-│   └── mascot.jpg          # Ilustrasi karakter anime untuk study buddy
+├── App.js                  # Root app, navigasi, kuis, review, animasi maskot Mika
 ├── app.json                # Metadata Expo dan base path GitHub Pages
 ├── package.json            # Dependency dan script
 ├── .github/
@@ -112,8 +112,12 @@ Hasil build berada di folder `dist/`. Di CI GitHub Actions, hasil build ini otom
 
 ## Roadmap
 
-- [ ] Tambahkan penyimpanan progres lokal.
+- [x] Tambahkan penyimpanan progres lokal.
+- [x] Simpan riwayat skor kuis dan review jawaban salah.
+- [x] Acak 10 soal dari bank soal yang lebih besar.
+- [x] Tambahkan maskot anime Mika dengan animasi interaktif.
+- [x] Jalankan smoke test bundling web dan Android lewat GitHub Actions.
 - [ ] Tambahkan mode gelap.
 - [ ] Pisahkan layar menjadi file komponen setelah materi dasar dipahami.
-- [ ] Uji ukuran teks besar, screen reader, dan perangkat Android/iOS.
+- [ ] Uji ukuran teks besar, screen reader, serta tampilan di perangkat Android/iOS fisik.
 - [ ] Upgrade SDK setelah memeriksa kompatibilitas dependency.
