@@ -7,6 +7,7 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
+  Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
@@ -18,7 +19,29 @@ import MascotCoach from './src/components/MascotCoach';
 
 // Kunci berversi agar struktur penyimpanan dapat dimigrasikan kemudian.
 const STORAGE_KEY = '@kuliah-lab/progress-v2';
-const QUESTIONS_PER_QUIZ = 10;
+const QUESTIONS_PER_QUIZ = 15;
+
+const documentationByLesson = {
+  components: [
+    { title: 'Core Components and APIs', description: 'Referensi resmi View, Text, Image, dan input.', url: 'https://reactnative.dev/docs/components-and-apis', label: 'reactnative.dev' },
+    { title: 'ScrollView', description: 'Memahami konten yang dapat digulir.', url: 'https://reactnative.dev/docs/scrollview', label: 'reactnative.dev' },
+    { title: 'FlatList', description: 'Daftar panjang dengan rendering item efisien.', url: 'https://reactnative.dev/docs/flatlist', label: 'reactnative.dev' },
+    { title: 'Expo: Get started', description: 'Panduan resmi menyiapkan aplikasi Expo.', url: 'https://docs.expo.dev/get-started/introduction/', label: 'docs.expo.dev' },
+  ],
+  'state-props': [
+    { title: 'Passing Props to a Component', description: 'Cara komponen menerima data dari parent.', url: 'https://react.dev/learn/passing-props-to-a-component', label: 'react.dev' },
+    { title: 'State: A Component’s Memory', description: 'Memahami state sebagai memori komponen.', url: 'https://react.dev/learn/state-a-components-memory', label: 'react.dev' },
+  ],
+  'use-state': [
+    { title: 'React useState', description: 'API resmi untuk menyimpan dan memperbarui state.', url: 'https://react.dev/reference/react/useState', label: 'react.dev' },
+    { title: 'Responding to Events', description: 'Menghubungkan aksi pengguna dengan event handler.', url: 'https://react.dev/learn/responding-to-events', label: 'react.dev' },
+    { title: 'Pressable', description: 'Kontrol tekan React Native untuk interaksi custom.', url: 'https://reactnative.dev/docs/pressable', label: 'reactnative.dev' },
+  ],
+  'flex-direction': [
+    { title: 'Flexbox', description: 'Panduan resmi menyusun layout horizontal dan vertikal.', url: 'https://reactnative.dev/docs/flexbox', label: 'reactnative.dev' },
+    { title: 'StyleSheet', description: 'Menyusun dan menggunakan style React Native.', url: 'https://reactnative.dev/docs/stylesheet', label: 'reactnative.dev' },
+  ],
+};
 
 /** Mengacak salinan array dengan Fisher-Yates tanpa mengubah bank asli. */
 function shuffleQuestions(source) {
@@ -230,7 +253,7 @@ function HomeScreen({ completedCount, completedIds, quizScore, onOpenLesson, onS
         </View>
         <View style={styles.quizPromoCopy}>
           <Text style={styles.quizPromoTitle}>Tes pemahaman lu</Text>
-          <Text style={styles.quizPromoText}>10 soal pilihan ganda + pembahasan.</Text>
+          <Text style={styles.quizPromoText}>15 soal pilihan ganda + pembahasan.</Text>
         </View>
         <AppIcon name="arrow-up-right" size={21} color={colors.ink} />
       </Pressable>
@@ -291,6 +314,8 @@ function LessonsScreen({ completedIds, onOpenLesson }) {
 /** Detail pelajaran mengajarkan konsep, poin kunci, kode, dan takeaway. */
 function LessonDetailScreen({ lesson, completed, onBack, onComplete }) {
   if (!lesson) return null;
+  const resources = documentationByLesson[lesson.id] || [];
+
 
   return (
     <ScrollView contentContainerStyle={styles.screenContent} showsVerticalScrollIndicator={false}>
@@ -347,6 +372,37 @@ function LessonDetailScreen({ lesson, completed, onBack, onComplete }) {
           <Text selectable style={styles.codeText}>{lesson.code}</Text>
         </ScrollView>
       </View>
+
+      {resources.length > 0 ? (
+        <View style={styles.docsSection}>
+          <View style={styles.docsHeadingRow}>
+            <View style={styles.docsHeadingIcon}><AppIcon name="book-outline" size={19} color={colors.forest} /></View>
+            <View style={styles.docsHeadingCopy}>
+              <Text style={styles.docsTitle}>Lanjut ke dokumentasi resmi</Text>
+              <Text style={styles.docsSubtitle}>Pelajari konsep lebih dalam langsung dari pembuat teknologinya.</Text>
+            </View>
+          </View>
+          <View style={styles.docsList}>
+            {resources.map((resource) => (
+              <Pressable
+                key={resource.url}
+                accessibilityRole="link"
+                accessibilityLabel={'Buka dokumentasi ' + resource.title}
+                onPress={() => Linking.openURL(resource.url).catch(() => {})}
+                style={({ pressed }) => [styles.docsLink, pressed && styles.cardPressed]}
+              >
+                <View style={styles.docsLinkIcon}><AppIcon name="open-outline" size={17} color={colors.forest} /></View>
+                <View style={styles.docsLinkCopy}>
+                  <Text style={styles.docsLinkTitle}>{resource.title}</Text>
+                  <Text style={styles.docsLinkDescription}>{resource.description}</Text>
+                  <Text style={styles.docsLinkDomain}>{resource.label}</Text>
+                </View>
+                <AppIcon name="arrow-up-right" size={18} color={colors.forest} />
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
 
       <View style={styles.takeawayCard}>
         <View style={styles.takeawayIcon}>
@@ -437,7 +493,7 @@ function QuizScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screenContent} showsVerticalScrollIndicator={false}>
-      <PageHeader eyebrow="PRACTICE / UTS" title="Uji pemahaman" subtitle="Pilih jawaban terbaik, lalu baca pembahasannya." />
+      <PageHeader eyebrow="PRACTICE / UTS" title="Uji pemahaman" subtitle={'Satu sesi berisi ' + questions.length + ' soal acak dari bank ' + questionBank.length + ' soal.'} />
       <View style={styles.quizProgressHeader}>
         <Text style={styles.quizQuestionCount}>SOAL {String(questionIndex + 1).padStart(2, '0')} <Text style={styles.quizQuestionOf}>/ {String(questions.length).padStart(2, '0')}</Text></Text>
         <Text style={styles.quizTopic}>{question.topic}</Text>
@@ -1003,6 +1059,19 @@ const styles = StyleSheet.create({
   codeDot: { width: 7, height: 7, borderRadius: 4 },
   codeFileLabel: { color: '#B7C9C0', fontSize: 9, fontWeight: '800', letterSpacing: 1.2 },
   codeText: { padding: spacing.lg, color: '#E1EFE7', fontFamily: 'monospace', fontSize: 12, lineHeight: 20 },
+  docsSection: { padding: spacing.lg, gap: spacing.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg },
+  docsHeadingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  docsHeadingIcon: { width: 38, height: 38, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.sage },
+  docsHeadingCopy: { flex: 1, gap: 3 },
+  docsTitle: { color: colors.ink, fontSize: 15, fontWeight: '900' },
+  docsSubtitle: { color: colors.muted, fontSize: 11, lineHeight: 16 },
+  docsList: { gap: spacing.sm },
+  docsLink: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, backgroundColor: colors.paper },
+  docsLinkIcon: { width: 34, height: 34, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.sage },
+  docsLinkCopy: { flex: 1, gap: 3 },
+  docsLinkTitle: { color: colors.forest, fontSize: 12, lineHeight: 17, fontWeight: '900' },
+  docsLinkDescription: { color: colors.ink, fontSize: 11, lineHeight: 16 },
+  docsLinkDomain: { color: colors.muted, fontSize: 9, fontWeight: '800', letterSpacing: 0.4 },
   takeawayCard: { flexDirection: 'row', gap: spacing.md, backgroundColor: colors.sage, borderRadius: radius.md, padding: spacing.lg },
   takeawayIcon: { width: 35, height: 35, borderRadius: 12, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   takeawayCopy: { flex: 1, gap: 4 },
