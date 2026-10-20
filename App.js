@@ -783,12 +783,15 @@ export default function App() {
 
   /** Mereset seluruh state kuis untuk memulai sesi latihan yang baru. */
   function restartQuiz() {
+    // Setiap pengulangan mengambil sampel acak baru dari bank soal.
+    setQuizSessionQuestions(shuffleQuestions(questionBank).slice(0, QUESTIONS_PER_QUIZ));
+    setCurrentAttempt(null);
+    setSelectedReviewAttempt(null);
     setQuestionIndex(0);
     setSelectedAnswer(null);
     setAnswers([]);
     setFeedbackVisible(false);
     setQuizFinished(false);
-    setQuizScore(null);
     setActiveTab('quiz');
   }
 
@@ -803,12 +806,27 @@ export default function App() {
 
   /** Melanjutkan soal atau menghitung hasil ketika soal terakhir sudah diperiksa. */
   function nextQuestion() {
-    if (questionIndex === quizQuestions.length - 1) {
-      const correctCount = quizQuestions.reduce((total, question, index) => {
-        const answerForQuestion = index === questionIndex ? selectedAnswer : answers[index];
-        return total + (answerForQuestion === question.answer ? 1 : 0);
-      }, 0);
-      setQuizScore(Math.round((correctCount / quizQuestions.length) * 100));
+    if (questionIndex === quizSessionQuestions.length - 1) {
+      // Tambahkan jawaban soal terakhir ke salinan array sebelum menghitung hasil.
+      const finalAnswers = [...answers];
+      finalAnswers[questionIndex] = selectedAnswer;
+      const correctCount = quizSessionQuestions.reduce((total, question, index) => (
+        total + (finalAnswers[index] === question.answer ? 1 : 0)
+      ), 0);
+      const attempt = {
+        id: String(Date.now()),
+        timestamp: Date.now(),
+        score: Math.round((correctCount / quizSessionQuestions.length) * 100),
+        correctCount,
+        total: quizSessionQuestions.length,
+        items: quizSessionQuestions.map((question, index) => ({
+          ...question,
+          selectedAnswer: finalAnswers[index] ?? null,
+          isCorrect: finalAnswers[index] === question.answer,
+        })),
+      };
+      setCurrentAttempt(attempt);
+      setQuizHistory((existingHistory) => [attempt, ...existingHistory].slice(0, 20));
       setQuizFinished(true);
       return;
     }
