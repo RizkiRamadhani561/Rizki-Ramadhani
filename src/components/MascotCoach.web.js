@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 
-const mikaPortrait = 'https://gcdn.picsart.com/pipeline-output/ecfeab13-e1a4-4a84-aec2-e81c25ffcdfe.png';
+import mikaAsset from '../../assets/mika.jpg';
+
+// Expo Metro returns a URI object for image imports on web; tolerate a string URI too.
+const mikaPortrait = typeof mikaAsset === 'string' ? mikaAsset : mikaAsset?.uri;
 const calmReaction = { title: 'Hai, aku Mika! ✨', message: 'Sentuh aku untuk melihat reaksiku. Tapi jangan jahil berkali-kali, ya!', emoji: '💚' };
 
 export default function MascotCoach({ completedCount, quizScore, onTapLessons, onStartQuiz }) {
@@ -78,7 +81,7 @@ export default function MascotCoach({ completedCount, quizScore, onTapLessons, o
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 13, minHeight: 188, width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E1E4DC', borderRadius: 20, color: '#17211F', overflow: 'hidden' }} role="group" aria-label="Mika, karakter interaktif KULIAH LAB">
       <div style={{ width: 105, minWidth: 105, minHeight: 164, perspective: 850, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
         <motion.button type="button" onClick={onCharacterTap} aria-label="Sentuh Mika untuk melihat reaksinya" title="Empat sentuhan cepat membuat Mika kesal" whileTap={reduceMotion ? {} : { scale: 0.92, rotateX: 5 }} style={{ position: 'relative', display: 'block', width: 102, height: 150, padding: 0, border: 0, borderRadius: 17, overflow: 'hidden', cursor: 'pointer', background: '#F7F5EF', boxShadow: mood === 'angry' ? '0 7px 18px rgba(185,78,61,0.22)' : '0 7px 18px rgba(23,33,31,0.14)', transformPerspective: 850, transformStyle: 'preserve-3d' }}>
-          <motion.img key={animationVersion} src={mikaPortrait} alt="Mika, karakter anime berambut cokelat panjang, memakai hoodie hijau dan membawa tablet" draggable="false" animate={reduceMotion ? {} : characterMotion} transition={reactionTransition} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', userSelect: 'none' }} />
+          <motion.img src={mikaPortrait} alt="Mika, ilustrasi karakter anime perempuan berjaket hijau" draggable="false" animate={reduceMotion ? {} : characterMotion} transition={reactionTransition} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', userSelect: 'none' }} />
         </motion.button>
         <motion.div key={'mood-' + animationVersion} initial={reduceMotion ? false : { scale: 0, rotate: -12, opacity: 0 }} animate={reduceMotion ? {} : { scale: [1, 1.14, 1], rotate: [0, 7, 0], opacity: 1 }} transition={reduceMotion ? {} : { duration: 0.34 }} aria-hidden="true" style={{ position: 'absolute', top: -1, right: -1, display: 'grid', placeItems: 'center', width: 32, height: 32, borderRadius: 18, background: mood === 'angry' ? '#F8E7E2' : '#C9F06A', color: '#1F5B4B', fontSize: 17, boxShadow: '0 3px 10px rgba(23,33,31,0.12)', pointerEvents: 'none' }}>{reaction.emoji}</motion.div>
       </div>

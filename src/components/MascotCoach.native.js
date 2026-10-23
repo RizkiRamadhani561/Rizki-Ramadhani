@@ -110,7 +110,7 @@ export default function MascotCoach({ completedCount, quizScore, onTapLessons, o
     <View style={styles.card} accessibilityLabel="Mika, karakter interaktif KULIAH LAB">
       <Pressable accessibilityRole="button" accessibilityLabel="Sentuh Mika untuk melihat reaksinya" onPress={onCharacterTap} style={styles.portraitPressable}>
         <Animated.View style={[styles.portraitFrame, { transform: [{ translateX: shakeX }, { translateY: composedY }, { scale: pulse }] }, mood === 'angry' && styles.portraitFrameAngry]}>
-          <Image source={{ uri: 'https://gcdn.picsart.com/pipeline-output/ecfeab13-e1a4-4a84-aec2-e81c25ffcdfe.png' }} accessibilityLabel="Mika, karakter anime perempuan berambut cokelat panjang memakai hoodie hijau" resizeMode="cover" style={styles.portrait} />
+          <Image source={require('../../assets/mika.jpg')} accessibilityLabel="Mika, ilustrasi karakter anime perempuan berjaket hijau" resizeMode="cover" style={styles.portrait} />
         </Animated.View>
         <View style={[styles.moodBubble, mood === 'angry' && styles.moodBubbleAngry]}><Text style={styles.moodEmoji}>{reaction.emoji}</Text></View>
       </Pressable>

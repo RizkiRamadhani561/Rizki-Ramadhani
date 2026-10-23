@@ -35,7 +35,8 @@ Setiap push ke branch `main` akan otomatis membangun ulang versi web dan menerbi
 - `@expo/vector-icons`
 - `@react-native-async-storage/async-storage` untuk progres dan riwayat lokal
 - `motion` untuk animasi perspektif 3D khusus web
-- Ilustrasi Mika di `assets/mika.jpg`, dipakai oleh komponen web dan native yang terpisah
+- Ilustrasi Mika dari `assets/mika.jpg`, dibundel secara lokal untuk komponen web dan Android/iOS; tidak bergantung pada URL gambar eksternal
+- Animasi MVP menggerakkan ilustrasi JPG secara utuh (floating, jump, shake, dan respons sentuhan). Repository belum berisi model Live2D Cubism/rigging wajah.
 - React Native Web untuk versi browser
 
 ## Jalankan di komputer

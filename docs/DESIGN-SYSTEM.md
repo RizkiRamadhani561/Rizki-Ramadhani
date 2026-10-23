@@ -28,6 +28,8 @@ Verifikasi kontras final terhadap WCAG 2.2 AA sebelum rilis. Status harus memili
 
 Implementasi MVP memakai font system agar setup sederhana; pairing font khusus bisa ditambahkan setelah dependency font dipasang.
 
+**Batasan maskot:** aset yang tersedia saat ini adalah ilustrasi statis `assets/mika.jpg`. Animasi web dan native menggerakkan gambar secara utuh, bukan menggerakkan mata/mulut sebagai bagian terpisah. Untuk animasi Live2D yang dirigging, tambahkan model Cubism resmi beserta tekstur, motion, dan ekspresi yang lisensinya mengizinkan distribusi aplikasi.
+
 ## Spacing dan bentuk
 Gunakan rhythm 4/8 dp: 4, 8, 12, 16, 24, 32, 40. Radius: 10 untuk kontrol kecil, 16 untuk kartu, 22 untuk panel utama. Border tipis; shadow hanya bila membantu membedakan layer.
 
