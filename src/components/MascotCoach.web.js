@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 
-const mikaPortrait = 'https://gcdn.picsart.com/pipeline-output/ecfeab13-e1a4-4a84-aec2-e81c25ffcdfe.png';
+import mikaAsset from '../../assets/mika.jpg';
+
+// Expo Metro returns a URI object for image imports on web; tolerate a string URI too.
+const mikaPortrait = typeof mikaAsset === 'string' ? mikaAsset : mikaAsset?.uri;
 const calmReaction = { title: 'Hai, aku Mika! ✨', message: 'Sentuh aku untuk melihat reaksiku. Tapi jangan jahil berkali-kali, ya!', emoji: '💚' };
 
 export default function MascotCoach({ completedCount, quizScore, onTapLessons, onStartQuiz }) {
